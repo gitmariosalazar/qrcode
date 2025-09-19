@@ -15,7 +15,7 @@ export class AppService {
     timestamp: Date;
   } {
     return {
-      status: 'healthy',
+      status: 'QR Code service is healthy',
       timestamp: new Date(),
     };
   }

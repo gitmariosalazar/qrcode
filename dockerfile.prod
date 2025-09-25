@@ -1,6 +1,23 @@
 # Dependencies Stage - docker build -t qrcode-service .
 # This stage installs the dependencies for the application
-FROM node:24-alpine3.22 AS deps
+FROM node:24-bullseye AS deps
+
+
+RUN apt-get update && apt-get install -y \
+  python3 \
+  make \
+  g++ \
+  libcairo2-dev \
+  libpango1.0-dev \
+  libjpeg-dev \
+  libgif-dev \
+  libpixman-1-dev \
+  libpng-dev \
+  libfreetype6-dev \
+  librsvg2-dev \
+  && rm -rf /var/lib/apt/lists/*
+
+
 # Set working directory
 WORKDIR /usr/src/app
 # Copy package.json and package-lock.json
@@ -10,7 +27,22 @@ COPY package-lock.json ./
 RUN npm ci --legacy-peer-deps
 
 # Build Stage - docker build -t qrcode-service .
-FROM node:24-alpine3.22 AS builder
+FROM node:24-bullseye AS builder
+
+RUN apt-get update && apt-get install -y \
+  python3 \
+  make \
+  g++ \
+  libcairo2-dev \
+  libpango1.0-dev \
+  libjpeg-dev \
+  libgif-dev \
+  libpixman-1-dev \
+  libpng-dev \
+  libfreetype6-dev \
+  librsvg2-dev \
+  && rm -rf /var/lib/apt/lists/*
+
 # Set working directory
 WORKDIR /usr/src/app
 # Copy the dependencies from the deps stage
@@ -23,13 +55,30 @@ RUN npm run build
 RUN npm prune --production
 RUN npm ci --only --production && npm cache clean --force
 # Create the application image
-FROM node:24-alpine3.22 AS production
+FROM node:24-bullseye AS production
+
+# Install production dependencies
+RUN apt-get update && apt-get install -y \
+  python3 \
+  make \
+  g++ \
+  libcairo2-dev \
+  libpango1.0-dev \
+  libjpeg-dev \
+  libgif-dev \
+  libpixman-1-dev \
+  libpng-dev \
+  libfreetype6-dev \
+  librsvg2-dev \
+  && rm -rf /var/lib/apt/lists/*
+
 # Set working directory
 WORKDIR /usr/src/app
 # Copy the built application from the builder stage
 COPY --from=builder /usr/src/app/node_modules ./node_modules
 COPY --from=builder /usr/src/app/dist ./dist
 
+RUN mkdir -p /usr/src/app/assets && chown -R node:node /usr/src/app/assets
 # Set environment variables
 ENV NODE_ENV=production
 

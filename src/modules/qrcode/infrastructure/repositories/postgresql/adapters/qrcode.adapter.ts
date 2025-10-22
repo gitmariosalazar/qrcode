@@ -5,7 +5,7 @@ export class QRCodeAdapter {
     const qrCodeResponse: QRCodeResponse = {
       qrcodeId: qrcodeSQLResult.qrcodeId,
       acometidaId: qrcodeSQLResult.acometidaId,
-      urlQRCode: 'URL',
+      urlQRCode: qrcodeSQLResult.qrcodeUrl,
       createdAt: qrcodeSQLResult.createdAt
     }
     return qrCodeResponse

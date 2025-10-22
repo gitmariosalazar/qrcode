@@ -72,6 +72,7 @@ export class QRCodeUseCaseService implements InterfaceQrCodeUseCase {
         await this.factoryQRCodeService.generateCode(qrcodeRequest, qrCode);
       if (codeResponse !== null) {
         qrcodeRequest.imagenBytea = codeResponse.buffer
+        qrcodeRequest.qrcodeUrl = codeResponse.urlQRCode
         const qrcodeModel: QRCodeModel =
           QRCodeMapper.fromCreateQRCodeRequestToQRCodeModel(qrcodeRequest);
         const response: QRCodeResponse | null =

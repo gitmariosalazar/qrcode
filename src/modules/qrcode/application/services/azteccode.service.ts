@@ -44,7 +44,7 @@ export class AztecCodeService implements InterfaceCodeService {
 
       const id = uuidv4().replace(/-/g, '').substring(0, 10);
       console.log(`Código ${config.type.getBcid()} generado con ID: ${id}, Acometida ID: ${config.acometidaId}`);
-      return { id, buffer };
+      return { id, buffer, urlQRCode: '' };
     } catch (error) {
       console.error(`Error generando ${config.type.getBcid()} para Acometida ID ${config.acometidaId}:`, error);
       throw new Error(`No se pudo generar el código ${config.type.getBcid()} para Acometida ID ${config.acometidaId}`);

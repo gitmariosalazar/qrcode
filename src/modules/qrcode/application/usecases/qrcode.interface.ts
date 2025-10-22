@@ -32,4 +32,4 @@ export interface CodeConfig {
 }
 
 
-export interface ResultCode { id: string; buffer: Buffer; }
+export interface ResultCode { id: string; buffer: Buffer; urlQRCode: string }

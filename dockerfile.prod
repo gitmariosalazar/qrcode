@@ -77,7 +77,8 @@ WORKDIR /usr/src/app
 # Copy the built application from the builder stage
 COPY --from=builder /usr/src/app/node_modules ./node_modules
 COPY --from=builder /usr/src/app/dist ./dist
-
+COPY --from=builder /usr/src/app/assets ./assets
+# Create directory for QR code images
 RUN mkdir -p /usr/src/app/assets && chown -R node:node /usr/src/app/assets
 # Set environment variables
 ENV NODE_ENV=production

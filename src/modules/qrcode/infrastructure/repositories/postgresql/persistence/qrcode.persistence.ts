@@ -46,14 +46,15 @@ export class QRCodePostgreSQLPersistence implements InterfaceQRcodeRepository {
 
 
       const query: string = `
-        INSERT INTO qrcode (acometidaId, imagenBytea)
-        VALUES ($1, $2)
-        RETURNING qrcodeId AS "qrcodeId", acometidaId AS "acometidaId", imagenBytea AS "imagenBytea", createdAt AS "createdAt", updatedAt AS "updatedAt";
+        INSERT INTO qrcode (acometidaId, imagenBytea, qrcodeUrl)
+        VALUES ($1, $2, $3)
+        RETURNING qrcodeId AS "qrcodeId", acometidaId AS "acometidaId", imagenBytea AS "imagenBytea", qrcodeUrl AS "qrcodeUrl", createdAt AS "createdAt", updatedAt AS "updatedAt";
       `;
 
       const params = [
         qrcodeModel.getAcometidaId(),
         qrcodeModel.getImagenBytea(),
+        qrcodeModel.getQrcodeUrl(),
       ];
 
       const result = await this.postgresqlService.query<QRCodeSQLResult>(query, params);

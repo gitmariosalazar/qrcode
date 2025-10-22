@@ -10,8 +10,8 @@ const sharp = require('sharp');
 
 @Injectable()
 export class QRCodeService implements InterfaceCodeService {
-  private readonly outputDir = path.join(__dirname, '..', '..', '..', '..', '..', 'assets', 'images', 'qrcodes');
-  private readonly baseUrl = process.env.APP_BASE_URL || 'http://127.0.0.1:3005';
+  private readonly outputDir = '/home/sigepaa/sigepaa/images/qrcodes';
+  private readonly baseUrl = 'https://sigepaa-aa.com:8443';
 
   constructor() {
     console.log('Output directory:', this.outputDir);
@@ -153,11 +153,11 @@ export class QRCodeService implements InterfaceCodeService {
         .toFile(filePath);
       console.log('Here is your image:', filePath);
 
-      const downloadURL = `${this.baseUrl}/assets/images/qrcodes/${safeFileName}`;
+      const downloadURL = `${this.baseUrl}/images/qrcodes/${safeFileName}`;
 
       console.log(`Code ${config.type.getBcid()} generated with ID: ${id}, Acometida ID: ${config.acometidaId}, Saved in: ${filePath}, URL: ${downloadURL}`);
 
-      return { id, buffer: finalBuffer, filePath, downloadURL };
+      return { id, buffer: finalBuffer, filePath, downloadURL, urlQRCode: downloadURL };
     } catch (error) {
       console.error(`Error generating ${config.type.getBcid()} for Acometida ID ${config.acometidaId}:`, error);
       throw new Error(`Failed to generate code ${config.type.getBcid()} for Acometida ID ${config.acometidaId}`);

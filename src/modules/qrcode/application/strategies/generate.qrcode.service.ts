@@ -39,6 +39,7 @@ export class GenerateCodeFactoryService {
     return {
       id: codeConfig.acometidaId,
       buffer: result.buffer,
+      urlQRCode: result.urlQRCode,
     };
   }
 }

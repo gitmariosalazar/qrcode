@@ -1,13 +1,13 @@
 import { Module } from "@nestjs/common";
 import { ClientsModule, Transport } from "@nestjs/microservices";
-import { environments } from "src/settings/environments/environments";
 import { QRCodeController } from "../../controller/qrcode.controller";
-import { DatabaseServicePostgreSQL } from "src/shared/connections/database/postgresql/postgresql.service";
-import { QRCodeUseCaseService } from "src/modules/qrcode/application/services/qrcode.use-case.service";
 import { QRCodePostgreSQLPersistence } from "../../repositories/postgresql/persistence/qrcode.persistence";
-import { GenerateCodeFactoryService } from "src/modules/qrcode/application/strategies/generate.qrcode.service";
-import { QRCodeService } from "src/modules/qrcode/application/services/qrcode.service";
-import { AztecCodeService } from "src/modules/qrcode/application/services/azteccode.service";
+import { environments } from "../../../../../settings/environments/environments";
+import { DatabaseServicePostgreSQL } from "../../../../../shared/connections/database/postgresql/postgresql.service";
+import { QRCodeService } from "../../../application/services/qrcode.service";
+import { AztecCodeService } from "../../../application/services/azteccode.service";
+import { QRCodeUseCaseService } from "../../../application/services/qrcode.use-case.service";
+import { GenerateCodeFactoryService } from "../../../application/strategies/generate.qrcode.service";
 
 @Module({
   imports: [ClientsModule.register([

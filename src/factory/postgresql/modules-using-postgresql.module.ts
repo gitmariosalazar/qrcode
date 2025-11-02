@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { QRCodeModuleUsingPostgreSQL } from "src/modules/qrcode/infrastructure/modules/postgresql/postgresql.qrcode.module";
+import { QRCodeModuleUsingPostgreSQL } from "../../modules/qrcode/infrastructure/modules/postgresql/postgresql.qrcode.module";
 
 @Module({
   imports: [QRCodeModuleUsingPostgreSQL],

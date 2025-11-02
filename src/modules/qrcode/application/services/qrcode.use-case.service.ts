@@ -9,8 +9,8 @@ import { QRCodeModel } from '../../domain/schemas/model/qrcode.model';
 import { QRCodeMapper } from '../mappers/qrcode.mappers';
 import { ResultCode } from '../usecases/qrcode.interface';
 import { RpcException } from '@nestjs/microservices';
-import { statusCode } from 'src/settings/environments/status-code';
-import { validateFields } from 'src/shared/validators/fields.validators';
+import { validateFields } from '../../../../shared/validators/fields.validators';
+import { statusCode } from '../../../../settings/environments/status-code';
 
 @Injectable()
 export class QRCodeUseCaseService implements InterfaceQrCodeUseCase {

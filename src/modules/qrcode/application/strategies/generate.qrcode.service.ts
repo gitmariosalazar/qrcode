@@ -1,5 +1,4 @@
 import { CreateQRCodeRequest } from "../../domain/schemas/dto/request/create.qrcode.request";
-import { QRCodeResponse } from "../../domain/schemas/dto/response/qrcode.response";
 import { QRCodeFather, QRCode, AztecCode } from "../../domain/schemas/model/qrcode";
 import { QRCodeService } from "../services/qrcode.service";
 import { AztecCodeService } from "../services/azteccode.service";

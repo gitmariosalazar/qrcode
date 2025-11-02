@@ -1,12 +1,12 @@
 import { Injectable } from "@nestjs/common";
-import { InterfaceQRcodeRepository } from "src/modules/qrcode/domain/contracts/qrcode.interface.repository";
-import { QRCodeResponse } from "src/modules/qrcode/domain/schemas/dto/response/qrcode.response";
-import { QRCodeModel } from "src/modules/qrcode/domain/schemas/model/qrcode.model";
-import { DatabaseServicePostgreSQL } from "src/shared/connections/database/postgresql/postgresql.service";
 import { QRCodeSQLResult } from "../../../interfaces/sql/qrcode.interface";
 import { RpcException } from "@nestjs/microservices";
-import { statusCode } from "src/settings/environments/status-code";
 import { QRCodeAdapter } from "../adapters/qrcode.adapter";
+import { InterfaceQRcodeRepository } from "../../../../domain/contracts/qrcode.interface.repository";
+import { DatabaseServicePostgreSQL } from "../../../../../../shared/connections/database/postgresql/postgresql.service";
+import { QRCodeModel } from "../../../../domain/schemas/model/qrcode.model";
+import { QRCodeResponse } from "../../../../domain/schemas/dto/response/qrcode.response";
+import { statusCode } from "../../../../../../settings/environments/status-code";
 
 @Injectable()
 export class QRCodePostgreSQLPersistence implements InterfaceQRcodeRepository {

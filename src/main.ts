@@ -5,6 +5,7 @@ import { Transport } from '@nestjs/microservices';
 import { environments } from './settings/environments/environments';
 import * as morgan from 'morgan';
 import { DatabaseServicePostgreSQL } from './shared/connections/database/postgresql/postgresql.service';
+import { Partitioners } from 'kafkajs';
 
 async function bootstrap() {
   const logger: Logger = new Logger('QRCodeMain');
@@ -31,6 +32,10 @@ async function bootstrap() {
       },
       consumer: {
         groupId: environments.QRCODE_KAFKA_GROUP_ID,
+        allowAutoTopicCreation: true,
+      },
+      producer: {
+        createPartitioner: Partitioners.LegacyPartitioner,
         allowAutoTopicCreation: true,
       },
     },

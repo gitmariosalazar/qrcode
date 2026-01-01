@@ -1,92 +1,77 @@
-# Dependencies Stage - docker build -t qrcode-service .
-# This stage installs the dependencies for the application
-FROM node:24-bullseye AS deps
+# Dependencies Stage
+FROM node:24-slim AS deps
 
+# Instala solo lo necesario para compilar (build-essential incluye make/g++/python)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    build-essential \
+    libcairo2-dev \
+    libpango1.0-dev \
+    libjpeg-dev \
+    libgif-dev \
+    librsvg2-dev \
+    libpixman-1-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get update && apt-get install -y \
-  python3 \
-  make \
-  g++ \
-  libcairo2-dev \
-  libpango1.0-dev \
-  libjpeg-dev \
-  libgif-dev \
-  libpixman-1-dev \
-  libpng-dev \
-  libfreetype6-dev \
-  librsvg2-dev \
-  && rm -rf /var/lib/apt/lists/*
-
-
-# Set working directory
 WORKDIR /usr/src/app
-# Copy package.json and package-lock.json
+
 COPY package.json ./
 COPY package-lock.json ./
-# Install dependencies without modifying package-lock.json
+
 RUN npm ci --legacy-peer-deps
 
-# Build Stage - docker build -t qrcode-service .
-FROM node:24-bullseye AS builder
+# Build Stage
+FROM node:24-slim AS builder
 
-RUN apt-get update && apt-get install -y \
-  python3 \
-  make \
-  g++ \
-  libcairo2-dev \
-  libpango1.0-dev \
-  libjpeg-dev \
-  libgif-dev \
-  libpixman-1-dev \
-  libpng-dev \
-  libfreetype6-dev \
-  librsvg2-dev \
-  && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    build-essential \
+    libcairo2-dev \
+    libpango1.0-dev \
+    libjpeg-dev \
+    libgif-dev \
+    librsvg2-dev \
+    libpixman-1-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# Set working directory
 WORKDIR /usr/src/app
-# Copy the dependencies from the deps stage
+
 COPY --from=deps /usr/src/app/node_modules ./node_modules
-# Copy the rest of the application code
 COPY . .
-# Build the application
+
 RUN npm run build
-# Clean up dev dependencies
-RUN npm prune --production
-RUN npm ci --only --production && npm cache clean --force
-# Create the application image
-FROM node:24-bullseye AS production
 
-# Install production dependencies
-RUN apt-get update && apt-get install -y \
-  python3 \
-  make \
-  g++ \
-  libcairo2-dev \
-  libpango1.0-dev \
-  libjpeg-dev \
-  libgif-dev \
-  libpixman-1-dev \
-  libpng-dev \
-  libfreetype6-dev \
-  librsvg2-dev \
-  && rm -rf /var/lib/apt/lists/*
+# Limpia dev deps (solo prune basta)
+RUN npm prune --production && npm cache clean --force
 
-# Set working directory
+# Production Stage (más ligera)
+FROM node:24-slim AS production
+
+# Solo runtime libs (sin -dev)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    libcairo2 \
+    libpango-1.0-0 \
+    libjpeg62-turbo \
+    libgif7 \
+    librsvg2-2 \
+    libpixman-1-0 \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /usr/src/app
-# Copy the built application from the builder stage
+
 COPY --from=builder /usr/src/app/node_modules ./node_modules
 COPY --from=builder /usr/src/app/dist ./dist
 COPY --from=builder /usr/src/app/assets ./assets
-# Create directory for QR code images
+
+# Crea carpeta para assets y permisos
 RUN mkdir -p /usr/src/app/assets && chown -R node:node /usr/src/app/assets
-# Set environment variables
+
 ENV NODE_ENV=production
 
-# Use a non-root user to run the application
 USER node
 
-# Expose the application port
 EXPOSE 3006
-# Start the application
+
 CMD ["node", "dist/main.js"]

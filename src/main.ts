@@ -12,16 +12,18 @@ async function bootstrap() {
 
   const app = await NestFactory.create(AppModule);
 
-  await app.listen(environments.NODE_ENV === 'production' ? 3006 : 4006);
+  //await app.listen(environments.NODE_ENV === 'production' ? 3006 : 4006);
   app.use(morgan('dev'));
 
+  const postgresqlService: DatabaseServicePostgreSQL =
+    new DatabaseServicePostgreSQL();
 
-  const postgresqlService: DatabaseServicePostgreSQL = new DatabaseServicePostgreSQL();
-
-  logger.log(await postgresqlService.connect())
+  logger.log(await postgresqlService.connect());
+  /*
   logger.log(
     `🚀🎉 The QRCode microservice is running on: http://localhost:${environments.NODE_ENV === 'production' ? 3006 : 4006}✅`,
   );
+  */
 
   const microservice = await NestFactory.createMicroservice(AppModule, {
     transport: Transport.KAFKA,
@@ -42,6 +44,6 @@ async function bootstrap() {
   });
 
   await microservice.listen();
-  logger.log(`🚀🎉 The QRCode - microservice is listening to KAFKA...✅`);
+  logger.log(`Nest application successfully started`);
 }
 bootstrap();

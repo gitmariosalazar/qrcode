@@ -1,19 +1,25 @@
 FROM node:24-bullseye AS deps
 
-RUN apt-get update && apt-get install -y \
-  python3 \
-  make \
-  g++ \
-  libcairo2-dev \
-  libpango1.0-dev \
-  libjpeg-dev \
-  libgif-dev \
-  libpixman-1-dev \
-  libpng-dev \
-  libfreetype6-dev \
-  librsvg2-dev \
-  && rm -rf /var/lib/apt/lists/*
-RUN apt-get install -y curl
+# Instala dependencias necesarias para canvas, sharp, etc.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 \
+    make \
+    g++ \
+    libcairo2-dev \
+    libpango1.0-dev \
+    libjpeg-dev \
+    libgif-dev \
+    libpixman-1-dev \
+    libpng-dev \
+    libfreetype6-dev \
+    librsvg2-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Instala curl y netcat (versión tradicional, disponible en bullseye)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    netcat-traditional \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/src/app
 
@@ -26,6 +32,7 @@ COPY . .
 
 ENV NODE_ENV=development
 
-EXPOSE 4006
+# No necesitas EXPOSE (como ya acordamos)
+# EXPOSE 4006
 
 CMD ["npm", "run", "start:dev"]

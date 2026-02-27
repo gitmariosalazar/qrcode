@@ -1,6 +1,6 @@
-FROM node:24-bullseye AS deps
+FROM node:24-bullseye
 
-# Instala dependencias necesarias para canvas, sharp, etc.
+# Instala dependencias para paquetes nativos (canvas, sharp, etc.)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     make \
@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     librsvg2-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Instala curl y netcat (versión tradicional, disponible en bullseye)
+# curl y netcat para debug/healthchecks
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     netcat-traditional \
@@ -26,13 +26,12 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 COPY package-lock.json ./
 
+RUN npm config set registry https://registry.yarnpkg.com/
+
 RUN npm install
 
 COPY . .
 
 ENV NODE_ENV=development
-
-# No necesitas EXPOSE (como ya acordamos)
-# EXPOSE 4006
 
 CMD ["npm", "run", "start:dev"]

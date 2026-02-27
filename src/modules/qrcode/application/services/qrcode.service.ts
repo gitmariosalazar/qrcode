@@ -1,8 +1,12 @@
-import { CodeConfig, InterfaceCodeService, ResultCode } from "../usecases/qrcode.interface";
+import {
+  CodeConfig,
+  InterfaceCodeService,
+  ResultCode,
+} from '../usecases/qrcode.interface';
 import { Buffer } from 'buffer';
 import { v4 as uuidv4 } from 'uuid';
 import * as QRCode from 'qrcode';
-import { Injectable } from "@nestjs/common";
+import { Injectable } from '@nestjs/common';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { createCanvas, loadImage } from 'canvas';
@@ -10,7 +14,9 @@ const sharp = require('sharp');
 
 @Injectable()
 export class QRCodeService implements InterfaceCodeService {
-  private readonly outputDir = '/home/sigepaa/sigepaa/images/qrcodes';
+  private readonly outputDir =
+    process.env.QRCODE_OUTPUT_DIR ||
+    '/home/mariosalazar/Desktop/Epaa/images/qrcodes';
   private readonly baseUrl = 'https://sigepaa-aa.com:8443';
 
   constructor() {
@@ -27,19 +33,31 @@ export class QRCodeService implements InterfaceCodeService {
     }
   }
 
-  async generateQRCode(config: CodeConfig): Promise<ResultCode & { filePath?: string; downloadURL?: string }> {
+  async generateQRCode(
+    config: CodeConfig,
+  ): Promise<ResultCode & { filePath?: string; downloadURL?: string }> {
     try {
       config.type.validateData(config.data);
 
       const qrData = JSON.stringify({ acometidaId: config.acometidaId });
-      const logoDefault = path.join(__dirname, '..', '..', '..', '..', '..', 'assets', 'images', 'epaa.png');
+      const logoDefault = path.join(
+        __dirname,
+        '..',
+        '..',
+        '..',
+        '..',
+        '..',
+        'assets',
+        'images',
+        'epaa.png',
+      );
 
       const {
         margin = 4,
         size = 600,
         scale = 10,
         logoPath = logoDefault,
-        logoScale = 0.10,
+        logoScale = 0.1,
         title = config.acometidaId,
         titleFontSize = 12,
         titleColor = '#000000',
@@ -85,7 +103,9 @@ export class QRCodeService implements InterfaceCodeService {
         try {
           const logoMetadata = await sharp(logoPath).metadata();
           if (logoMetadata.width < 1000 || logoMetadata.height < 1000) {
-            console.warn('Icon resolution is low (<1000x1000). Consider using a higher resolution image.');
+            console.warn(
+              'Icon resolution is low (<1000x1000). Consider using a higher resolution image.',
+            );
           }
 
           const logoBuffer = await sharp(logoPath)
@@ -155,12 +175,25 @@ export class QRCodeService implements InterfaceCodeService {
 
       const downloadURL = `${this.baseUrl}/images/qrcodes/${safeFileName}`;
 
-      console.log(`Code ${config.type.getBcid()} generated with ID: ${id}, Acometida ID: ${config.acometidaId}, Saved in: ${filePath}, URL: ${downloadURL}`);
+      console.log(
+        `Code ${config.type.getBcid()} generated with ID: ${id}, Acometida ID: ${config.acometidaId}, Saved in: ${filePath}, URL: ${downloadURL}`,
+      );
 
-      return { id, buffer: finalBuffer, filePath, downloadURL, urlQRCode: downloadURL };
+      return {
+        id,
+        buffer: finalBuffer,
+        filePath,
+        downloadURL,
+        urlQRCode: downloadURL,
+      };
     } catch (error) {
-      console.error(`Error generating ${config.type.getBcid()} for Acometida ID ${config.acometidaId}:`, error);
-      throw new Error(`Failed to generate code ${config.type.getBcid()} for Acometida ID ${config.acometidaId}`);
+      console.error(
+        `Error generating ${config.type.getBcid()} for Acometida ID ${config.acometidaId}:`,
+        error,
+      );
+      throw new Error(
+        `Failed to generate code ${config.type.getBcid()} for Acometida ID ${config.acometidaId}`,
+      );
     }
   }
 }

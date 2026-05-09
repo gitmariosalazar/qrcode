@@ -1,0 +1,104 @@
+import { Injectable } from '@nestjs/common';
+import { QRCodeSQLResult } from '../../../interfaces/sql/qrcode.interface';
+import { RpcException } from '@nestjs/microservices';
+import { QRCodeAdapter } from '../../../adapters/qrcode.adapter';
+import { InterfaceQRcodeRepository } from '../../../../domain/contracts/qrcode.interface.repository';
+import { QRCodeModel } from '../../../../domain/schemas/model/qrcode.model';
+import { QRCodeResponse } from '../../../../domain/schemas/dto/response/qrcode.response';
+import { statusCode } from '../../../../../../settings/environments/status-code';
+import { DatabaseAbstract } from '../../../../../../shared/connections/database/abstract/abstract.database';
+
+@Injectable()
+export class QRCodeMySQLPersistence implements InterfaceQRcodeRepository {
+  constructor(private readonly databaseService: DatabaseAbstract) {}
+
+  async verifyIfExistQRCodeByAcmetidaId(acometidaId: string): Promise<boolean> {
+    try {
+      const query: string = `SELECT  q.qrcode_id, q.acometida_id FROM qrcode q WHERE acometida_id = ?;`;
+      const params: string[] = [acometidaId];
+      const result = await this.databaseService.query(query, params);
+      return result.length > 0;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async findAcometidaById(acometidaId: string): Promise<boolean> {
+    try {
+      const queryAcometidaFound: string = `
+        SELECT a.acometida_id FROM acometida a WHERE a.acometida_id = ?;
+      `;
+
+      const paramFound: string[] = [acometidaId];
+
+      const resultFound = await this.databaseService.query(
+        queryAcometidaFound,
+        paramFound,
+      );
+      return resultFound.length > 0;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async createQRcode(qrcodeModel: QRCodeModel): Promise<QRCodeResponse | null> {
+    try {
+      const query: string = `
+        INSERT INTO qrcode (acometida_id, imagen_bytea, qrcode_url)
+        VALUES (?, ?, ?);
+      `;
+
+      const params = [
+        qrcodeModel.getAcometidaId(),
+        qrcodeModel.getImagenBytea(),
+        qrcodeModel.getQrcodeUrl(),
+      ];
+
+      const result = await this.databaseService.execute(
+        query,
+        params,
+      );
+
+      if (result.affectedRows === 0) {
+        return null;
+      }
+      
+      const selectResult = await this.databaseService.query<QRCodeSQLResult>(`SELECT qrcode_id AS "qrcodeId", acometida_id AS "acometidaId", imagen_bytea AS "imagenBytea", qrcode_url AS "qrcodeUrl", created_at AS "createdAt", updated_at AS "updatedAt" FROM qrcode WHERE qrcode_id = ?`, [result.insertId]);
+
+      const response: QRCodeResponse =
+        QRCodeAdapter.fromQRCodeSQLResultToQRCodeResponse(selectResult[0]);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async findQRCodeByAcometidaId(
+    acometidaId: string,
+  ): Promise<QRCodeResponse | null> {
+    try {
+      const query: string = `
+        SELECT  q.qrcode_id AS "qrcodeId", q.acometida_id AS "acometidaId", q.imagen_bytea AS "imagenBytea", q.created_at AS "createdAt" FROM qrcode q WHERE acometida_id = ?
+      `;
+      const params = [acometidaId];
+
+      const result = await this.databaseService.query<QRCodeSQLResult>(
+        query,
+        params,
+      );
+
+      if (result.length === 0) {
+        throw new RpcException({
+          statusCode: statusCode.NOT_FOUND,
+          message: `QR Code with acometida ID ${acometidaId} not found`,
+        });
+      }
+
+      const qrcodeResponse: QRCodeResponse =
+        QRCodeAdapter.fromQRCodeSQLResultToQRCodeResponse(result[0]);
+      return qrcodeResponse;
+    } catch (error) {
+      throw error;
+    }
+  }
+}

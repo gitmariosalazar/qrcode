@@ -1,22 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { QRCodeSQLResult } from '../../../interfaces/sql/qrcode.interface';
 import { RpcException } from '@nestjs/microservices';
-import { QRCodeAdapter } from '../adapters/qrcode.adapter';
+import { QRCodeAdapter } from '../../../adapters/qrcode.adapter';
 import { InterfaceQRcodeRepository } from '../../../../domain/contracts/qrcode.interface.repository';
-import { DatabaseServicePostgreSQL } from '../../../../../../shared/connections/database/postgresql/postgresql.service';
 import { QRCodeModel } from '../../../../domain/schemas/model/qrcode.model';
 import { QRCodeResponse } from '../../../../domain/schemas/dto/response/qrcode.response';
 import { statusCode } from '../../../../../../settings/environments/status-code';
+import { DatabaseAbstract } from '../../../../../../shared/connections/database/abstract/abstract.database';
 
 @Injectable()
 export class QRCodePostgreSQLPersistence implements InterfaceQRcodeRepository {
-  constructor(private readonly postgresqlService: DatabaseServicePostgreSQL) {}
+  constructor(private readonly databaseService: DatabaseAbstract) {}
 
   async verifyIfExistQRCodeByAcmetidaId(acometidaId: string): Promise<boolean> {
     try {
       const query: string = `SELECT  q.qrcode_id, q.acometida_id FROM qrcode q WHERE acometida_id = $1;`;
       const params: string[] = [acometidaId];
-      const result = await this.postgresqlService.query(query, params);
+      const result = await this.databaseService.query(query, params);
       return result.length === 1;
     } catch (error) {
       throw error;
@@ -31,7 +31,7 @@ export class QRCodePostgreSQLPersistence implements InterfaceQRcodeRepository {
 
       const paramFound: string[] = [acometidaId];
 
-      const resultFound = await this.postgresqlService.query(
+      const resultFound = await this.databaseService.query(
         queryAcometidaFound,
         paramFound,
       );
@@ -55,7 +55,7 @@ export class QRCodePostgreSQLPersistence implements InterfaceQRcodeRepository {
         qrcodeModel.getQrcodeUrl(),
       ];
 
-      const result = await this.postgresqlService.query<QRCodeSQLResult>(
+      const result = await this.databaseService.query<QRCodeSQLResult>(
         query,
         params,
       );
@@ -81,7 +81,7 @@ export class QRCodePostgreSQLPersistence implements InterfaceQRcodeRepository {
       `;
       const params = [acometidaId];
 
-      const result = await this.postgresqlService.query<QRCodeSQLResult>(
+      const result = await this.databaseService.query<QRCodeSQLResult>(
         query,
         params,
       );

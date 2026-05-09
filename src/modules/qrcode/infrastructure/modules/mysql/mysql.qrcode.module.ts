@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { QRCodeController } from '../../controller/qrcode.controller';
-import { QRCodePostgreSQLPersistence } from '../../repositories/postgresql/persistence/postgresql.qrcode.persistence';
 import { environments } from '../../../../../settings/environments/environments';
 import { QRCodeService } from '../../../application/services/qrcode.service';
 import { AztecCodeService } from '../../../application/services/azteccode.service';
 import { QRCodeUseCaseService } from '../../../application/services/qrcode.use-case.service';
 import { GenerateCodeFactoryService } from '../../../application/strategies/generate.qrcode.service';
+import { QRCodeMySQLPersistence } from '../../repositories/mysql/persistence/mysql.qrcode.persistence';
 import { DatabasePersistenceModule } from '../../../../../shared/connections/database/database-persistence.module';
 
 @Module({
@@ -36,9 +36,9 @@ import { DatabasePersistenceModule } from '../../../../../shared/connections/dat
     GenerateCodeFactoryService,
     {
       provide: 'QRCodeRepository',
-      useClass: QRCodePostgreSQLPersistence,
+      useClass: QRCodeMySQLPersistence,
     },
   ],
   exports: [],
 })
-export class QRCodeModuleUsingPostgreSQL {}
+export class QRCodeModuleUsingMySQL {}

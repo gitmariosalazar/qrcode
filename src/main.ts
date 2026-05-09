@@ -4,7 +4,7 @@ import { Logger } from '@nestjs/common';
 import { Transport } from '@nestjs/microservices';
 import { environments } from './settings/environments/environments';
 import * as morgan from 'morgan';
-import { DatabaseServicePostgreSQL } from './shared/connections/database/postgresql/postgresql.service';
+import { DatabaseAbstract } from './shared/connections/database/abstract/abstract.database';
 import { Partitioners } from 'kafkajs';
 
 async function bootstrap() {
@@ -15,10 +15,8 @@ async function bootstrap() {
   //await app.listen(environments.NODE_ENV === 'production' ? 3006 : 4006);
   app.use(morgan('dev'));
 
-  const postgresqlService: DatabaseServicePostgreSQL =
-    new DatabaseServicePostgreSQL();
-
-  logger.log(await postgresqlService.connect());
+  const dbService = app.get(DatabaseAbstract);
+  logger.log(await dbService.connect());
   /*
   logger.log(
     `🚀🎉 The QRCode microservice is running on: http://localhost:${environments.NODE_ENV === 'production' ? 3006 : 4006}✅`,

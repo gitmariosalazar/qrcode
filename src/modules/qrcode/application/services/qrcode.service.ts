@@ -17,7 +17,6 @@ export class QRCodeService implements InterfaceCodeService {
   private readonly outputDir =
     process.env.QRCODE_OUTPUT_DIR ||
     '/home/mariosalazar/Desktop/Epaa/images/qrcodes';
-  private readonly baseUrl = 'https://sigepaa-aa.com:8443';
 
   constructor() {
     console.log('Output directory:', this.outputDir);
@@ -173,7 +172,7 @@ export class QRCodeService implements InterfaceCodeService {
         .toFile(filePath);
       console.log('Here is your image:', filePath);
 
-      const downloadURL = `${this.baseUrl}/images/qrcodes/${safeFileName}`;
+      const downloadURL = `$/images/qrcodes/${safeFileName}`;
 
       console.log(
         `Code ${config.type.getBcid()} generated with ID: ${id}, Acometida ID: ${config.acometidaId}, Saved in: ${filePath}, URL: ${downloadURL}`,

@@ -19,7 +19,6 @@ export class QRCodeService implements InterfaceCodeService {
     '/home/mariosalazar/Desktop/Epaa/images/qrcodes';
 
   constructor() {
-    console.log('Output directory:', this.outputDir);
     this.ensureOutputDirectory();
   }
 
@@ -170,13 +169,13 @@ export class QRCodeService implements InterfaceCodeService {
       await sharp(finalBuffer)
         .png({ compressionLevel: 0, quality: 100 })
         .toFile(filePath);
-      console.log('Here is your image:', filePath);
+      //console.log('Here is your image:', filePath);
 
       const downloadURL = `$/images/qrcodes/${safeFileName}`;
 
-      console.log(
-        `Code ${config.type.getBcid()} generated with ID: ${id}, Acometida ID: ${config.acometidaId}, Saved in: ${filePath}, URL: ${downloadURL}`,
-      );
+      //console.log(
+      //  `Code ${config.type.getBcid()} generated with ID: ${id}, Acometida ID: ${config.acometidaId}, Saved in: ${filePath}, URL: ${downloadURL}`,
+      //);
 
       return {
         id,

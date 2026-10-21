@@ -1,13 +1,16 @@
-import { CodeConfig, InterfaceCodeService, ResultCode } from "../usecases/qrcode.interface";
+import {
+  CodeConfig,
+  InterfaceCodeService,
+  ResultCode,
+} from '../usecases/qrcode.interface';
 import { Buffer } from 'buffer';
 import { v4 as uuidv4 } from 'uuid';
-import { Injectable } from "@nestjs/common";
+import { Injectable } from '@nestjs/common';
 import * as bwipjs from 'bwip-js';
-
 
 @Injectable()
 export class AztecCodeService implements InterfaceCodeService {
-  constructor() { }
+  constructor() {}
 
   async generateQRCode(config: CodeConfig): Promise<ResultCode> {
     try {
@@ -31,9 +34,9 @@ export class AztecCodeService implements InterfaceCodeService {
       };
 
       // Debug logs
-      console.log('bwipj:', bwipjs);
-      console.log('bwipj.toBuffer:', bwipjs.toBuffer);
-      console.log('Options:', options);
+      //console.log('bwipj:', bwipjs);
+      //console.log('bwipj.toBuffer:', bwipjs.toBuffer);
+      //console.log('Options:', options);
 
       // Generate Aztec code as buffer
       const buffer: Buffer = await bwipjs.toBuffer(options);
@@ -43,11 +46,13 @@ export class AztecCodeService implements InterfaceCodeService {
       }
 
       const id = uuidv4().replace(/-/g, '').substring(0, 10);
-      console.log(`Código ${config.type.getBcid()} generado con ID: ${id}, Acometida ID: ${config.acometidaId}`);
+      //console.log(`Código ${config.type.getBcid()} generado con ID: ${id}, Acometida ID: ${config.acometidaId}`);
       return { id, buffer, urlQRCode: '' };
     } catch (error) {
-      console.error(`Error generando ${config.type.getBcid()} para Acometida ID ${config.acometidaId}:`, error);
-      throw new Error(`No se pudo generar el código ${config.type.getBcid()} para Acometida ID ${config.acometidaId}`);
+      //console.error(`Error generando ${config.type.getBcid()} para Acometida ID ${config.acometidaId}:`, error);
+      throw new Error(
+        `No se pudo generar el código ${config.type.getBcid()} para Acometida ID ${config.acometidaId}`,
+      );
     }
   }
 }
